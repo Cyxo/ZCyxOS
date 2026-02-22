@@ -1,0 +1,7 @@
+.zig-cache
+zig-out
+xorriso-exe-for-windows
+make_iso.ps1
+
+**/*.elf
+**/*.iso
