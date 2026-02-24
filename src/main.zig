@@ -2,6 +2,9 @@ const builtin = @import("builtin");
 const math = @import("std").math;
 const limine = @import("limine");
 
+const console = @import("screen/console.zig");
+const font = @import("screen/font.zig");
+
 export var start_marker: limine.RequestsStartMarker linksection(".limine_requests_start") = .{};
 export var end_marker: limine.RequestsEndMarker linksection(".limine_requests_end") = .{};
 
@@ -76,21 +79,23 @@ noinline fn kmain() callconv(.c) void {
         if (response.framebuffer_count >= 1) {
             const framebuffer: *limine.Framebuffer = response.getFramebuffers()[0];
 
-            for (0..100) |x| {
-                for (0..100) |y| {
-                    const fb_ptr: [*]volatile u32 = @ptrCast(@alignCast(framebuffer.address));
-                    const fy = @as(f64, @floatFromInt(y));
-                    const fx = @as(f64, @floatFromInt(x));
-                    const s = @sqrt(math.pow(f64, fx - 50, 2) + math.pow(f64, fy - 50, 2)) / 50.0;
-                    if (s <= 1.0) {
-                        var angle = math.atan2(fy - 50.0, fx - 50.0) + (math.pi / 2.0);
-                        if (angle < 0) angle += 2 * math.pi;
-                        const h = angle;
-                        const color = from_hsv(h, s, 1.0);
-                        fb_ptr[y * (framebuffer.pitch / 4) + x] = color.r * 256 * 256 + color.g * 256 + color.b;
-                    }
-                }
-            }
+            // for (0..100) |x| {
+            //     for (0..100) |y| {
+            //         const fb_ptr: [*]volatile u32 = @ptrCast(@alignCast(framebuffer.address));
+            //         const fy = @as(f64, @floatFromInt(y));
+            //         const fx = @as(f64, @floatFromInt(x));
+            //         const s = @sqrt(math.pow(f64, fx - 50, 2) + math.pow(f64, fy - 50, 2)) / 50.0;
+            //         if (s <= 1.0) {
+            //             var angle = math.atan2(fy - 50.0, fx - 50.0) + (math.pi / 2.0);
+            //             if (angle < 0) angle += 2 * math.pi;
+            //             const h = angle;
+            //             const color = from_hsv(h, s, 1.0);
+            //             fb_ptr[y * (framebuffer.pitch / 4) + x] = color.r * 256 * 256 + color.g * 256 + color.b;
+            //         }
+            //     }
+            // }
+            console.init(framebuffer);
+            console.print("Hello from {s} v{d}!", .{ "CyxOS", 3 });
         } else {
             @panic("No framebuffer returned by Limine");
         }
