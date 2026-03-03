@@ -76,7 +76,7 @@ pub fn printCharAt(char: u8, color: Color, x: usize, y: usize) void {
     }
 }
 
-/// INFO: Scrolling is left as an exercise for the reader
+/// Visual scroll, no actual history / buffer bigger than the screen
 fn checkAndScroll() void {
     const size = g_framebuffer.pitch * g_framebuffer.height * 4;
     const line_bytes = g_framebuffer.pitch * 16;
@@ -165,5 +165,4 @@ pub fn printString(str: []const u8) void {
 pub fn print(comptime fmt: []const u8, args: anytype) void {
     var w = writer(&.{});
     w.print(fmt, args) catch return;
-    printString(w.buffer);
 }
