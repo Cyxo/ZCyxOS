@@ -78,11 +78,14 @@ pub fn printCharAt(char: u8, color: Color, x: usize, y: usize) void {
 
 /// Visual scroll, no actual history / buffer bigger than the screen
 fn checkAndScroll() void {
-    const size = g_framebuffer.pitch * g_framebuffer.height * 4;
-    const line_bytes = g_framebuffer.pitch * 16;
-    const fb_ptr: [*]volatile u32 = @ptrCast(@alignCast(g_framebuffer.address));
-    @memmove(fb_ptr[line_bytes..size], fb_ptr[0 .. size - line_bytes]);
-    @memset(fb_ptr[size - line_bytes .. size], @intFromEnum(g_color.bg));
+    if (g_row >= g_framebuffer.height) {
+        const size = g_framebuffer.pitch * g_framebuffer.height / 4;
+        const line_bytes = g_framebuffer.pitch * 4;
+        const fb_ptr: [*]volatile u32 = @ptrCast(@alignCast(g_framebuffer.address));
+        @memmove(fb_ptr[0 .. size - line_bytes], fb_ptr[line_bytes..size]);
+        @memset(fb_ptr[size - line_bytes .. size], @intFromEnum(g_color.bg));
+        g_row -= 16;
+    }
 }
 
 /// Print character to the VGA
